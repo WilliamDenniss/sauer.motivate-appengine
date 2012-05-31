@@ -1,35 +1,30 @@
 import logging
 import os
 import traceback
+import webapp2
 
 from google.appengine.api import oauth
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import util
 
 
-class MainHandler(webapp.RequestHandler):
+class MainHandler(webapp2.RequestHandler):
   def get(self):
     self.post()
 
   def post(self):
     self.response.headers['Content-Type'] = 'text/plain'
-    self.response.out.write('Hi there!\n')
+    self.response.write('Hi there!\n')
 
     scope = 'https://www.googleapis.com/auth/userinfo.email'
-    self.response.out.write('\noauth.get_current_user(%s)' % repr(scope))
+    self.response.write('\noauth.get_current_user(%s)' % repr(scope))
     try:
       user = oauth.get_current_user(scope)
-      self.response.out.write(' = %s\n' % user)
+      self.response.write(' = %s\n' % user)
     except oauth.OAuthRequestError, e:
       self.response.set_status(200)
-      self.response.out.write(' -> %s %s\n' % (e.__class__.__name__, e.message))
+      self.response.write(' -> %s %s\n' % (e.__class__.__name__, e.message))
       logging.warn(traceback.format_exc())
 
-def main():
-  app = webapp.WSGIApplication([
-    ('/.*', MainHandler)
-  ], debug=True)
-  util.run_wsgi_app(app)
 
-if __name__ == "__main__":
-  main()
+app = webapp2.WSGIApplication([
+  ('/.*', MainHandler)
+], debug=True)

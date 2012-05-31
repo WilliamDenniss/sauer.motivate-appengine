@@ -1,7 +1,8 @@
 application: sauer-motivate
-version: python25
-runtime: python
+version: python27
+runtime: python27
 api_version: 1
+threadsafe: true
 
 handlers:
 - url: /favicon\.ico
@@ -9,5 +10,5 @@ handlers:
   upload: favicon\.ico
 
 - url: .*
-  script: main.py
+  script: main.app
 
