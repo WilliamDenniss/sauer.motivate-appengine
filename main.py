@@ -1,3 +1,5 @@
+import logging
+import os
 import traceback
 
 from google.appengine.api import oauth
@@ -13,18 +15,15 @@ class MainHandler(webapp.RequestHandler):
     self.response.headers['Content-Type'] = 'text/plain'
     self.response.out.write('Hi there!\n')
 
-    scopes = (None,
-              'https://www.googleapis.com/auth/userinfo.email',
-              'oauth2:https://www.googleapis.com/auth/userinfo.email')
-    for scope in scopes:
-      self.response.out.write('\noauth.get_current_user(%s)' % repr(scope))
-      try:
-        user = oauth.get_current_user(scope)
-        self.response.out.write(' = %s\n' % user)
-      except oauth.OAuthRequestError, e:
-        self.response.set_status(200)
-        self.response.out.write(' -> %s\n' % e)
-        self.response.out.write(traceback.format_exc())
+    scope = 'https://www.googleapis.com/auth/userinfo.email'
+    self.response.out.write('\noauth.get_current_user(%s)' % repr(scope))
+    try:
+      user = oauth.get_current_user(scope)
+      self.response.out.write(' = %s\n' % user)
+    except oauth.OAuthRequestError, e:
+      self.response.set_status(200)
+      self.response.out.write(' -> %s %s\n' % (e.__class__.__name__, e.message))
+      logging.warn(traceback.format_exc())
 
 def main():
   app = webapp.WSGIApplication([

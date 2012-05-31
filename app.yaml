@@ -1,5 +1,5 @@
 application: sauer-motivate
-version: test25
+version: python25
 runtime: python
 api_version: 1
 
