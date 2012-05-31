@@ -1,39 +1,36 @@
 import traceback
-import webapp2
 
 from google.appengine.api import oauth
+from google.appengine.ext import webapp
+from google.appengine.ext.webapp import util
 
 
-class MainHandler(webapp2.RequestHandler):
+class MainHandler(webapp.RequestHandler):
   def get(self):
     self.post()
 
   def post(self):
     self.response.headers['Content-Type'] = 'text/plain'
-    try:
-      user = oauth.get_current_user()
-      self.response.write('Hello, %s' % user)
-    except oauth.OAuthRequestError, e:
-      self.response.set_status(200)
-      self.response.write('Dude, you need to authorize yourself.\n')
-      self.response.write(traceback.format_exc())
+    self.response.out.write('Hi there!\n')
 
-    try:
-      user = oauth.get_current_user('https://www.googleapis.com/auth/userinfo.email')
-      self.response.write('Hello, %s' % user)
-    except oauth.OAuthRequestError, e:
-      self.response.set_status(200)
-      self.response.write('Dude, you need to authorize yourself.\n')
-      self.response.write(traceback.format_exc())
+    scopes = (None,
+              'https://www.googleapis.com/auth/userinfo.email',
+              'oauth2:https://www.googleapis.com/auth/userinfo.email')
+    for scope in scopes:
+      self.response.out.write('\noauth.get_current_user(%s)' % repr(scope))
+      try:
+        user = oauth.get_current_user(scope)
+        self.response.out.write(' = %s\n' % user)
+      except oauth.OAuthRequestError, e:
+        self.response.set_status(200)
+        self.response.out.write(' -> %s\n' % e)
+        self.response.out.write(traceback.format_exc())
 
-    try:
-      user = oauth.get_current_user('oauth2:https://www.googleapis.com/auth/userinfo.email')
-      self.response.write('Hello, %s' % user)
-    except oauth.OAuthRequestError, e:
-      self.response.set_status(200)
-      self.response.write('Dude, you need to authorize yourself.\n')
-      self.response.write(traceback.format_exc())
+def main():
+  app = webapp.WSGIApplication([
+    ('/.*', MainHandler)
+  ], debug=True)
+  util.run_wsgi_app(app)
 
-app = webapp2.WSGIApplication([
-  ('/.*', MainHandler)
-], debug=True)
+if __name__ == "__main__":
+  main()
