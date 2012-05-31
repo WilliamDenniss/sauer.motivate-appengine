@@ -26,6 +26,14 @@ class MainHandler(webapp2.RequestHandler):
       self.response.write('Dude, you need to authorize yourself.\n')
       self.response.write(traceback.format_exc())
 
+    try:
+      user = oauth.get_current_user('oauth2:https://www.googleapis.com/auth/userinfo.email')
+      self.response.write('Hello, %s' % user)
+    except oauth.OAuthRequestError, e:
+      self.response.set_status(200)
+      self.response.write('Dude, you need to authorize yourself.\n')
+      self.response.write(traceback.format_exc())
+
 app = webapp2.WSGIApplication([
   ('/.*', MainHandler)
 ], debug=True)
