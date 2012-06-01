@@ -17,6 +17,10 @@ class MainHandler(webapp2.RequestHandler):
     try:
       user = oauth.get_current_user(scope)
       self.response.write(' = %s\n' % user)
+      self.response.write('- auth_domain = %s\n' % user.auth_domain())
+      self.response.write('- email       = %s\n' % user.email())
+      self.response.write('- nickname    = %s\n' % user.nickname())
+      self.response.write('- user_id     = %s\n' % user.user_id())
     except oauth.OAuthRequestError, e:
       self.response.set_status(200)
       self.response.write(' -> %s %s\n' % (e.__class__.__name__, e.message))
