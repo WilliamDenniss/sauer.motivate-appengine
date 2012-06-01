@@ -1,9 +1,7 @@
+from google.appengine.api import oauth
 import logging
-import os
 import traceback
 import webapp2
-
-from google.appengine.api import oauth
 
 
 class MainHandler(webapp2.RequestHandler):
